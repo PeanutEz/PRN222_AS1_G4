@@ -29,6 +29,20 @@ namespace RAGChatBot.Presentation.Middlewares
             }
         }
 
+        public Task HandleExceptionAsync(HttpContext context, Exception exception)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            var result = JsonSerializer.Serialize(new
+            {
+                error = "Đã xảy ra lỗi nội bộ trong hệ thống. Vui lòng thử lại sau.",
+                details = exception.Message // Có thể ẩn đi trong môi trường Production
+            });
+
+            return context.Response.WriteAsync(result);
+        }
+
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
